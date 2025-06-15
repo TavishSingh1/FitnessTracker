@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
+import userRouter from './routes/user.route.js';
 
 dotenv.config();
 
@@ -13,6 +14,8 @@ app.get('/', async (req, res) => {
         message: "Server is running successfully!"
     })
 })
+
+app.use('/api/user', userRouter);
 
 app.listen(PORT, () => {
     connectDB();
