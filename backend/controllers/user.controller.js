@@ -121,3 +121,34 @@ export const getAllUsers = async (req, res) => {
         });
     }
 }
+
+export const loginUser = async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({
+            success: false,
+            message: "Please provide both username and password."
+        });
+    }
+    try {
+        const user = await User.find({ username: username, password: password });
+        if (user.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid username or password."
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Login successful!",
+            data: user[0]
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error logging in.",
+            error: error.message
+        });
+    }
+}
