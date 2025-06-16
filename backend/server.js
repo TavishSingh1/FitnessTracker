@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import userRouter from './routes/user.route.js';
+import exerciseRouter from './routes/exercise.route.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.get('/', async (req, res) => {
 })
 
 app.use('/api/user', userRouter);
+app.use('/api/exercise', exerciseRouter);
 
 app.listen(PORT, () => {
     connectDB();
