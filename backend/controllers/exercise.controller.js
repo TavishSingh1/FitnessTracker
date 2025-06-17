@@ -125,3 +125,36 @@ export const deleteExercise = async (req, res) => {
         });
     }
 }
+
+export const getExerciseById = async (req, res) => {
+    const exerciseId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(exerciseId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid exercise ID."
+        });
+    }
+
+    try {
+        const exercise = await Exercise.findById(exerciseId);
+
+        if (!exercise) {
+            return res.status(404).json({
+                success: false,
+                message: "Exercise not found."
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: exercise
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching exercise.",
+            error: error.message
+        });
+    }
+}
