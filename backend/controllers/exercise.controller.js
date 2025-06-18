@@ -28,10 +28,10 @@ export const getAllExercises = async (req, res) => {
 export const addExercise = async (req, res) => {
     const exerciseData = req.body;
 
-    if (!exerciseData.name || !exerciseData.duration || !exerciseData.caloriesBurned) {
+    if (!exerciseData.name || !exerciseData.duration || !exerciseData.caloriesBurned || !exerciseData.intensity) {
         return res.status(400).json({
             success: false,
-            message: "Please provide all required fields: name, duration, and calories burned (caloriesBurned)."
+            message: "Please provide all required fields: name, duration, intensity, and calories burned (caloriesBurned)."
         });
     }
 
@@ -63,10 +63,10 @@ export const updateExercise = async (req, res) => {
         });
     }
 
-    if (!exerciseData.name || !exerciseData.duration || !exerciseData.caloriesBurned) {
+    if (!exerciseData.name || !exerciseData.duration || !exerciseData.caloriesBurned || !exerciseData.intensity) {
         return res.status(400).json({
             success: false,
-            message: "Please provide all required fields: name, duration, and calories burned (caloriesBurned)."
+            message: "Please provide all required fields: name, duration, intensity, and calories burned (caloriesBurned)."
         });
     }
 

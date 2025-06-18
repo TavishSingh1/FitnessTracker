@@ -6,6 +6,10 @@ const exerciseSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    intensity: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
     },
