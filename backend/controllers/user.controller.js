@@ -19,6 +19,14 @@ export const registerUser = async (req, res) => {
         });
     }
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(userData.email)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid email format."
+        });
+    }
+
     const newUser = new User(userData);
 
     try {
@@ -82,6 +90,22 @@ export const updateUser = async (req, res) => {
         return res.status(400).json({
             success: false,
             message: "Please provide at least one field to update."
+        });
+    }
+
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!regex.test(updateData.password)) {
+        return res.status(400).json({
+            success: false,
+            message: "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+        });
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(updateData.email)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid email format."
         });
     }
 

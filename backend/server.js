@@ -5,6 +5,7 @@ import userRouter from './routes/user.route.js';
 import exerciseRouter from './routes/exercise.route.js';
 import activityRouter from './routes/activity.route.js';
 import foodRouter from './routes/food.route.js';
+import consumptionRouter from './routes/consumption.route.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/user', userRouter);
 app.use('/api/exercise', exerciseRouter);
 app.use('/api/activity', activityRouter);
 app.use('/api/food', foodRouter);
+app.use('/api/consumption', consumptionRouter);
 
 app.listen(PORT, () => {
     connectDB();

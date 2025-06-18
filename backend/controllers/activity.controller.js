@@ -148,7 +148,7 @@ export const getUserActivityOnDate = async (req, res) => {
             user: user,
             date: {
                 $gte: new Date(parsedDate.setHours(0, 0, 0, 0)),
-                $lt: new Date(parsedDate.setHours(23, 59, 59, 999))
+                $lte: new Date(parsedDate.setHours(23, 59, 59, 999))
             }
         });
 
