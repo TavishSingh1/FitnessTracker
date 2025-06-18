@@ -4,6 +4,7 @@ import { connectDB } from './config/db.js';
 import userRouter from './routes/user.route.js';
 import exerciseRouter from './routes/exercise.route.js';
 import activityRouter from './routes/activity.route.js';
+import foodRouter from './routes/food.route.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get('/', async (req, res) => {
 app.use('/api/user', userRouter);
 app.use('/api/exercise', exerciseRouter);
 app.use('/api/activity', activityRouter);
+app.use('/api/food', foodRouter);
 
 app.listen(PORT, () => {
     connectDB();
