@@ -1,12 +1,13 @@
 import express from 'express';
 import { addExercise, deleteExercise, getAllExercises, getExerciseById, updateExercise } from '../controllers/exercise.controller.js';
+import auth from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.get("/getAll", getAllExercises);
-router.post("/add", addExercise);
-router.patch("/update/:id", updateExercise);
-router.delete("/delete/:id", deleteExercise);
-router.get("/:id", getExerciseById);
+router.get("/getAll", auth, getAllExercises);
+router.post("/add", auth, addExercise);
+router.patch("/update/:id", auth, updateExercise);
+router.delete("/delete/:id", auth, deleteExercise);
+router.get("/:id", auth, getExerciseById);
 
 export default router;
