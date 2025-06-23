@@ -23,6 +23,7 @@ export default function App() {
         { id: 'w2', type: 'Yoga', intensity: 'Slow', duration: 49, calories: 147, date: '2024-12-10', time: '08:00' },
         { id: 'w3', type: 'Weight Lifting', intensity: 'Intense', duration: 65, calories: 520, date: '2024-12-09', time: '17:30' },
     ]);
+
     const [meals, setMeals] = useState([
         { id: 'm1', item: 'Oatmeal with Berries', calories: 320, date: '2024-12-11', time: '08:00' },
         { id: 'm2', item: 'Chicken Salad Sandwich', calories: 450, date: '2024-12-11', time: '13:00' },
