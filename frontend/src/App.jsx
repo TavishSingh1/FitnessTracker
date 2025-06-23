@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './App.css'; 
+import React, { useState } from 'react';
+import './App.css';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import AddActivityPage from './components/AddActivityPage';
@@ -7,55 +7,46 @@ import HistoryPage from './components/HistoryPage';
 import EditWorkoutPage from './components/EditWorkoutPage';
 import EditMealPage from './components/EditMealPage';
 import ConfirmationModal from './components/ConfirmationModal';
-
+import LoginPage from './components/Login/login.jsx';
 
 function App() {
-  
-    const [currentPage, setCurrentPage] = useState('home');
-    const [addActivityDefaultTab, setAddActivityDefaultTab] = useState('workout'); 
-
+    const [currentPage, setCurrentPage] = useState('login'); // Start from login page
+    const [addActivityDefaultTab, setAddActivityDefaultTab] = useState('workout');
 
     const [workouts, setWorkouts] = useState([
         { id: 'w1', type: 'Running', intensity: 'Medium', duration: 34, calories: 340, date: '2024-12-11', time: '07:30' },
         { id: 'w2', type: 'Yoga', intensity: 'Slow', duration: 49, calories: 147, date: '2024-12-10', time: '08:00' },
         { id: 'w3', type: 'Weight Lifting', intensity: 'Intense', duration: 65, calories: 520, date: '2024-12-09', time: '17:30' },
     ]);
+
     const [meals, setMeals] = useState([
         { id: 'm1', item: 'Oatmeal with Berries', calories: 320, date: '2024-12-11', time: '08:00' },
         { id: 'm2', item: 'Chicken Salad Sandwich', calories: 450, date: '2024-12-11', time: '13:00' },
     ]);
 
-
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [deleteType, setDeleteType] = useState('');
 
-
-
     const [editItemData, setEditItemData] = useState(null);
     const [editItemType, setEditItemType] = useState(null);
 
-
-    const handleNavigation = (page, defaultTab = 'workout') => { 
+    const handleNavigation = (page, defaultTab = 'workout') => {
         setCurrentPage(page);
         if (page === 'add-activity') {
-            setAddActivityDefaultTab(defaultTab); 
+            setAddActivityDefaultTab(defaultTab);
         }
     };
-
-
 
     const handleSaveWorkout = (newWorkout) => {
         setWorkouts(prev => [...prev, { ...newWorkout, id: `w${prev.length + 1}` }]);
         setCurrentPage('history');
     };
 
-
     const handleSaveMeal = (newMeal) => {
         setMeals(prev => [...prev, { ...newMeal, id: `m${prev.length + 1}` }]);
         setCurrentPage('history');
     };
-
 
     const handleEdit = (id, type) => {
         if (type === 'workout') {
@@ -71,14 +62,12 @@ function App() {
         }
     };
 
-
     const handleSaveWorkoutEdit = (updatedWorkout) => {
         setWorkouts(prev => prev.map(w => w.id === updatedWorkout.id ? updatedWorkout : w));
         setEditItemData(null);
         setEditItemType(null);
         setCurrentPage('history');
     };
-
 
     const handleSaveMealEdit = (updatedMeal) => {
         setMeals(prev => prev.map(m => m.id === updatedMeal.id ? updatedMeal : m));
@@ -87,21 +76,17 @@ function App() {
         setCurrentPage('history');
     };
 
-
     const handleCancelEdit = () => {
         setEditItemData(null);
         setEditItemType(null);
         setCurrentPage('history');
     };
 
-
-
     const handleDeleteClick = (id, type) => {
         setItemToDelete({ id, type });
         setDeleteType(type);
         setShowDeleteModal(true);
     };
-
 
     const confirmDelete = () => {
         if (itemToDelete) {
@@ -110,13 +95,12 @@ function App() {
             } else if (itemToDelete.type === 'meal') {
                 setMeals(prev => prev.filter(m => m.id !== itemToDelete.id));
             }
-            alert(`The ${itemToDelete.type} entry has been deleted.`); 
+            alert(`The ${itemToDelete.type} entry has been deleted.`);
         }
         setShowDeleteModal(false);
         setItemToDelete(null);
         setDeleteType('');
     };
-
 
     const cancelDelete = () => {
         setShowDeleteModal(false);
@@ -124,64 +108,73 @@ function App() {
         setDeleteType('');
     };
 
-
     const totalWorkouts = workouts.length;
     const totalMeals = meals.length;
 
-
-
     const renderPage = () => {
         switch (currentPage) {
+            case 'login':
+                return <LoginPage onLoginSuccess={() => setCurrentPage('home')} />;
             case 'home':
-                return <HomePage
-                    totalWorkouts={totalWorkouts}
-                    totalMeals={totalMeals}
-                    onAddActivity={handleNavigation} 
-                />;
+                return (
+                    <HomePage
+                        totalWorkouts={totalWorkouts}
+                        totalMeals={totalMeals}
+                        onAddActivity={handleNavigation}
+                    />
+                );
             case 'add-activity':
-                return <AddActivityPage
-                    onSaveWorkout={handleSaveWorkout}
-                    onSaveMeal={handleSaveMeal}
-                    onCancel={() => handleNavigation('home')}
-                    defaultTab={addActivityDefaultTab} 
-                />;
+                return (
+                    <AddActivityPage
+                        onSaveWorkout={handleSaveWorkout}
+                        onSaveMeal={handleSaveMeal}
+                        onCancel={() => handleNavigation('home')}
+                        defaultTab={addActivityDefaultTab}
+                    />
+                );
             case 'history':
-                return <HistoryPage
-                    workouts={workouts}
-                    meals={meals}
-                    onAddActivity={handleNavigation}
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteClick}
-                />;
+                return (
+                    <HistoryPage
+                        workouts={workouts}
+                        meals={meals}
+                        onAddActivity={handleNavigation}
+                        onEdit={handleEdit}
+                        onDelete={handleDeleteClick}
+                    />
+                );
             case 'edit-workout':
-                return <EditWorkoutPage
-                    initialData={editItemData}
-                    onSaveEdit={handleSaveWorkoutEdit}
-                    onCancelEdit={handleCancelEdit}
-                />;
+                return (
+                    <EditWorkoutPage
+                        initialData={editItemData}
+                        onSaveEdit={handleSaveWorkoutEdit}
+                        onCancelEdit={handleCancelEdit}
+                    />
+                );
             case 'edit-meal':
-                return <EditMealPage
-                    initialData={editItemData}
-                    onSaveEdit={handleSaveMealEdit}
-                    onCancelEdit={handleCancelEdit}
-                />;
+                return (
+                    <EditMealPage
+                        initialData={editItemData}
+                        onSaveEdit={handleSaveMealEdit}
+                        onCancelEdit={handleCancelEdit}
+                    />
+                );
             default:
-                return <HomePage
-                    totalWorkouts={totalWorkouts}
-                    totalMeals={totalMeals}
-                    onAddActivity={handleNavigation}
-                />;
+                return (
+                    <HomePage
+                        totalWorkouts={totalWorkouts}
+                        totalMeals={totalMeals}
+                        onAddActivity={handleNavigation}
+                    />
+                );
         }
     };
 
-
     return (
         <div className="App">
-            <Sidebar currentPage={currentPage} onNavigate={handleNavigation} />
-            <main className="main-content-wrapper">
-                {renderPage()}
-            </main>
-
+            {currentPage !== 'login' && (
+                <Sidebar currentPage={currentPage} onNavigate={handleNavigation} />
+            )}
+            <main className="main-content-wrapper">{renderPage()}</main>
             <ConfirmationModal
                 isVisible={showDeleteModal}
                 message={`Are you sure you want to delete this ${deleteType} entry? Once deleted, it cannot be retrieved.`}
@@ -191,6 +184,5 @@ function App() {
         </div>
     );
 }
-
 
 export default App;
