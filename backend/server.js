@@ -8,7 +8,7 @@ import activityRouter from './routes/activity.route.js';
 import foodRouter from './routes/food.route.js';
 import consumptionRouter from './routes/consumption.route.js';
 
-import auth from './middleware/auth.js'; // ✅ Import auth middleware
+import auth from './middlewares/auth.js';
 
 dotenv.config();
 
