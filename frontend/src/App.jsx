@@ -1,5 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './App.css'; 
+import React, { useState } from 'react';
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    useNavigate,
+    useLocation,
+    useParams,
+} from 'react-router-dom';
+
+import './App.css';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import AddActivityPage from './components/AddActivityPage';
@@ -8,13 +17,7 @@ import EditWorkoutPage from './components/EditWorkoutPage';
 import EditMealPage from './components/EditMealPage';
 import ConfirmationModal from './components/ConfirmationModal';
 
-
-function App() {
-  
-    const [currentPage, setCurrentPage] = useState('home');
-    const [addActivityDefaultTab, setAddActivityDefaultTab] = useState('workout'); 
-
-
+export default function App() {
     const [workouts, setWorkouts] = useState([
         { id: 'w1', type: 'Running', intensity: 'Medium', duration: 34, calories: 340, date: '2024-12-11', time: '07:30' },
         { id: 'w2', type: 'Yoga', intensity: 'Slow', duration: 49, calories: 147, date: '2024-12-10', time: '08:00' },
@@ -25,76 +28,41 @@ function App() {
         { id: 'm2', item: 'Chicken Salad Sandwich', calories: 450, date: '2024-12-11', time: '13:00' },
     ]);
 
-
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
-    const [deleteType, setDeleteType] = useState('');
+    const [deleteType, setDeleteType] = useState(''); 
 
+    const navigate = useNavigate();
+    const location = useLocation();
 
-
-    const [editItemData, setEditItemData] = useState(null);
-    const [editItemType, setEditItemType] = useState(null);
-
-
-    const handleNavigation = (page, defaultTab = 'workout') => { 
-        setCurrentPage(page);
-        if (page === 'add-activity') {
-            setAddActivityDefaultTab(defaultTab); 
+    const handleNavigation = (page, defaultTab = 'workout') => {
+        switch (page) {
+            case 'home': navigate('/'); break;
+            case 'add-activity': navigate(`/add-activity/${defaultTab}`); break;
+            case 'history': navigate('/history'); break;
+            default: navigate('/'); break;
         }
     };
-
-
 
     const handleSaveWorkout = (newWorkout) => {
         setWorkouts(prev => [...prev, { ...newWorkout, id: `w${prev.length + 1}` }]);
-        setCurrentPage('history');
+        navigate('/history');
     };
-
 
     const handleSaveMeal = (newMeal) => {
         setMeals(prev => [...prev, { ...newMeal, id: `m${prev.length + 1}` }]);
-        setCurrentPage('history');
+        navigate('/history');
     };
-
-
-    const handleEdit = (id, type) => {
-        if (type === 'workout') {
-            const workoutToEdit = workouts.find(w => w.id === id);
-            setEditItemData(workoutToEdit);
-            setEditItemType('workout');
-            setCurrentPage('edit-workout');
-        } else if (type === 'meal') {
-            const mealToEdit = meals.find(m => m.id === id);
-            setEditItemData(mealToEdit);
-            setEditItemType('meal');
-            setCurrentPage('edit-meal');
-        }
-    };
-
 
     const handleSaveWorkoutEdit = (updatedWorkout) => {
         setWorkouts(prev => prev.map(w => w.id === updatedWorkout.id ? updatedWorkout : w));
-        setEditItemData(null);
-        setEditItemType(null);
-        setCurrentPage('history');
+        navigate('/history');
     };
-
 
     const handleSaveMealEdit = (updatedMeal) => {
         setMeals(prev => prev.map(m => m.id === updatedMeal.id ? updatedMeal : m));
-        setEditItemData(null);
-        setEditItemType(null);
-        setCurrentPage('history');
+        navigate('/history');
     };
-
-
-    const handleCancelEdit = () => {
-        setEditItemData(null);
-        setEditItemType(null);
-        setCurrentPage('history');
-    };
-
-
 
     const handleDeleteClick = (id, type) => {
         setItemToDelete({ id, type });
@@ -102,21 +70,19 @@ function App() {
         setShowDeleteModal(true);
     };
 
-
     const confirmDelete = () => {
         if (itemToDelete) {
             if (itemToDelete.type === 'workout') {
                 setWorkouts(prev => prev.filter(w => w.id !== itemToDelete.id));
-            } else if (itemToDelete.type === 'meal') {
+            } else {
                 setMeals(prev => prev.filter(m => m.id !== itemToDelete.id));
             }
-            alert(`The ${itemToDelete.type} entry has been deleted.`); 
+            alert(`The ${itemToDelete.type} entry has been deleted.`);
         }
         setShowDeleteModal(false);
         setItemToDelete(null);
         setDeleteType('');
     };
-
 
     const cancelDelete = () => {
         setShowDeleteModal(false);
@@ -124,62 +90,81 @@ function App() {
         setDeleteType('');
     };
 
-
-    const totalWorkouts = workouts.length;
-    const totalMeals = meals.length;
-
-
-
-    const renderPage = () => {
-        switch (currentPage) {
-            case 'home':
-                return <HomePage
-                    totalWorkouts={totalWorkouts}
-                    totalMeals={totalMeals}
-                    onAddActivity={handleNavigation} 
-                />;
-            case 'add-activity':
-                return <AddActivityPage
-                    onSaveWorkout={handleSaveWorkout}
-                    onSaveMeal={handleSaveMeal}
-                    onCancel={() => handleNavigation('home')}
-                    defaultTab={addActivityDefaultTab} 
-                />;
-            case 'history':
-                return <HistoryPage
-                    workouts={workouts}
-                    meals={meals}
-                    onAddActivity={handleNavigation}
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteClick}
-                />;
-            case 'edit-workout':
-                return <EditWorkoutPage
-                    initialData={editItemData}
-                    onSaveEdit={handleSaveWorkoutEdit}
-                    onCancelEdit={handleCancelEdit}
-                />;
-            case 'edit-meal':
-                return <EditMealPage
-                    initialData={editItemData}
-                    onSaveEdit={handleSaveMealEdit}
-                    onCancelEdit={handleCancelEdit}
-                />;
-            default:
-                return <HomePage
-                    totalWorkouts={totalWorkouts}
-                    totalMeals={totalMeals}
-                    onAddActivity={handleNavigation}
-                />;
+    const currentPage = (() => {
+        if (location.pathname.startsWith('/add-activity')) return 'add-activity';
+        if (location.pathname.startsWith('/edit-workout')) return 'edit-workout';
+        if (location.pathname.startsWith('/edit-meal')) return 'edit-meal';
+        switch (location.pathname) {
+            case '/history': return 'history';
+            case '/': return 'home';
+            default: return 'home';
         }
-    };
-
+    })();
 
     return (
-        <div className="App">
+        <>
             <Sidebar currentPage={currentPage} onNavigate={handleNavigation} />
+
             <main className="main-content-wrapper">
-                {renderPage()}
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <HomePage
+                                totalWorkouts={workouts.length}
+                                totalMeals={meals.length}
+                                onAddActivity={handleNavigation}
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/add-activity/:tab?"
+                        element={<AddActivityRoute
+                            onSaveWorkout={handleSaveWorkout}
+                            onSaveMeal={handleSaveMeal}
+                            onCancel={() => navigate('/')}
+                        />}
+                    />
+
+                    <Route
+                        path="/history"
+                        element={
+                            <HistoryPage
+                                workouts={workouts}
+                                meals={meals}
+                                onAddActivity={handleNavigation}
+                                onEdit={(id, type) =>
+                                    navigate(type === 'workout' ? `/edit-workout/${id}` : `/edit-meal/${id}`)}
+                                onDelete={handleDeleteClick}
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/edit-workout/:id"
+                        element={<EditWorkoutRoute
+                            workouts={workouts}
+                            onSaveEdit={handleSaveWorkoutEdit}
+                            onCancelEdit={() => navigate('/history')}
+                        />}
+                    />
+
+                    <Route
+                        path="/edit-meal/:id"
+                        element={<EditMealRoute
+                            meals={meals}
+                            onSaveEdit={handleSaveMealEdit}
+                            onCancelEdit={() => navigate('/history')}
+                        />}
+                    />
+
+                    <Route path="*" element={<HomePage
+                        totalWorkouts={workouts.length}
+                        totalMeals={meals.length}
+                        onAddActivity={handleNavigation}
+                    />} />
+                </Routes>
             </main>
 
             <ConfirmationModal
@@ -188,9 +173,42 @@ function App() {
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />
-        </div>
+        </>
     );
 }
 
+function AddActivityRoute({ onSaveWorkout, onSaveMeal, onCancel }) {
+    const { tab } = useParams();
+    return (
+        <AddActivityPage
+            onSaveWorkout={onSaveWorkout}
+            onSaveMeal={onSaveMeal}
+            onCancel={onCancel}
+            defaultTab={tab || 'workout'}
+        />
+    );
+}
 
-export default App;
+function EditWorkoutRoute({ workouts, onSaveEdit, onCancelEdit }) {
+    const { id } = useParams();
+    const workout = workouts.find(w => w.id === id);
+    return (
+        <EditWorkoutPage
+            initialData={workout}
+            onSaveEdit={onSaveEdit}
+            onCancelEdit={onCancelEdit}
+        />
+    );
+}
+
+function EditMealRoute({ meals, onSaveEdit, onCancelEdit }) {
+    const { id } = useParams();
+    const meal = meals.find(m => m.id === id);
+    return (
+        <EditMealPage
+            initialData={meal}
+            onSaveEdit={onSaveEdit}
+            onCancelEdit={onCancelEdit}
+        />
+    );
+}
