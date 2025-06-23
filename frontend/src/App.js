@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './App.css'; // Import the CSS file
+import './App.css'; 
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import AddActivityPage from './components/AddActivityPage';
@@ -10,13 +10,11 @@ import ConfirmationModal from './components/ConfirmationModal';
 
 
 function App() {
-    // State to manage the currently active page
+  
     const [currentPage, setCurrentPage] = useState('home');
-    // NEW STATE: To hold the default tab for the AddActivityPage
-    const [addActivityDefaultTab, setAddActivityDefaultTab] = useState('workout'); // Default to 'workout'
+    const [addActivityDefaultTab, setAddActivityDefaultTab] = useState('workout'); 
 
 
-    // State to manage workouts and meals data
     const [workouts, setWorkouts] = useState([
         { id: 'w1', type: 'Running', intensity: 'Medium', duration: 34, calories: 340, date: '2024-12-11', time: '07:30' },
         { id: 'w2', type: 'Yoga', intensity: 'Slow', duration: 49, calories: 147, date: '2024-12-10', time: '08:00' },
@@ -28,27 +26,25 @@ function App() {
     ]);
 
 
-    // State for the delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [deleteType, setDeleteType] = useState('');
 
 
-    // State for editing
+
     const [editItemData, setEditItemData] = useState(null);
     const [editItemType, setEditItemType] = useState(null);
 
 
-    // Function to change the current page and potentially set a default tab
-    const handleNavigation = (page, defaultTab = 'workout') => { // Added defaultTab parameter
+    const handleNavigation = (page, defaultTab = 'workout') => { 
         setCurrentPage(page);
         if (page === 'add-activity') {
-            setAddActivityDefaultTab(defaultTab); // Set the default tab when navigating to add-activity
+            setAddActivityDefaultTab(defaultTab); 
         }
     };
 
 
-    // --- Add Activity Handlers ---
+
     const handleSaveWorkout = (newWorkout) => {
         setWorkouts(prev => [...prev, { ...newWorkout, id: `w${prev.length + 1}` }]);
         setCurrentPage('history');
@@ -61,7 +57,6 @@ function App() {
     };
 
 
-    // --- Edit Activity Handlers ---
     const handleEdit = (id, type) => {
         if (type === 'workout') {
             const workoutToEdit = workouts.find(w => w.id === id);
@@ -100,7 +95,7 @@ function App() {
     };
 
 
-    // --- Delete Confirmation Handlers ---
+
     const handleDeleteClick = (id, type) => {
         setItemToDelete({ id, type });
         setDeleteType(type);
@@ -115,7 +110,7 @@ function App() {
             } else if (itemToDelete.type === 'meal') {
                 setMeals(prev => prev.filter(m => m.id !== itemToDelete.id));
             }
-            alert(`The ${itemToDelete.type} entry has been deleted.`); // Changed from confirm to alert
+            alert(`The ${itemToDelete.type} entry has been deleted.`); 
         }
         setShowDeleteModal(false);
         setItemToDelete(null);
@@ -130,26 +125,25 @@ function App() {
     };
 
 
-    // Calculate total workouts/meals for quick stats on HomePage
     const totalWorkouts = workouts.length;
     const totalMeals = meals.length;
 
 
-    // Render the active page based on `currentPage` state
+
     const renderPage = () => {
         switch (currentPage) {
             case 'home':
                 return <HomePage
                     totalWorkouts={totalWorkouts}
                     totalMeals={totalMeals}
-                    onAddActivity={handleNavigation} // This now correctly passes the type
+                    onAddActivity={handleNavigation} 
                 />;
             case 'add-activity':
                 return <AddActivityPage
                     onSaveWorkout={handleSaveWorkout}
                     onSaveMeal={handleSaveMeal}
                     onCancel={() => handleNavigation('home')}
-                    defaultTab={addActivityDefaultTab} // NEW: Pass the default tab as a prop
+                    defaultTab={addActivityDefaultTab} 
                 />;
             case 'history':
                 return <HistoryPage
