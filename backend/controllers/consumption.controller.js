@@ -4,7 +4,7 @@ import Consumption from "../models/consumption.model.js"
 export const getAllConsumptions = async (req, res) => {
     try {
         const consumptions = await Consumption.find({});
-        if(!consumptions || consumptions.length === 0) {
+        if (!consumptions || consumptions.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "No consumptions found"
@@ -26,7 +26,7 @@ export const getAllConsumptions = async (req, res) => {
 
 export const getConsumptionById = async (req, res) => {
     const userId = req.params.userId;
-    if(!mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
             success: false,
             message: "Invalid user ID"
@@ -34,7 +34,7 @@ export const getConsumptionById = async (req, res) => {
     }
     try {
         const userConsumptions = await Consumption.find({ user: userId });
-        if(!userConsumptions || userConsumptions.length === 0) {
+        if (!userConsumptions || userConsumptions.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "No consumptions found for this user"
@@ -55,8 +55,8 @@ export const getConsumptionById = async (req, res) => {
 }
 
 export const getConsumptionByIdAndDate = async (req, res) => {
-    const {userId, date} = req.body;
-    if(!mongoose.Types.ObjectId.isValid(userId)) {
+    const { userId, date } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
             success: false,
             message: "Invalid user ID"
@@ -71,11 +71,11 @@ export const getConsumptionByIdAndDate = async (req, res) => {
         });
     }
     try {
-        const userConsumption = await Consumption.find({ 
-            user: userId, 
-            date: { $gte: new Date(userDate.setHours(0, 0, 0, 0)), $lte: new Date(userDate.setHours(23, 59, 59, 999)) } 
+        const userConsumption = await Consumption.find({
+            user: userId,
+            date: { $gte: new Date(userDate.setHours(0, 0, 0, 0)), $lte: new Date(userDate.setHours(23, 59, 59, 999)) }
         });
-        if(!userConsumption || userConsumption.length === 0) {
+        if (!userConsumption || userConsumption.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "No consumptions found for this user on the specified date"
@@ -97,13 +97,13 @@ export const getConsumptionByIdAndDate = async (req, res) => {
 
 export const addConsumption = async (req, res) => {
     const consumptionData = req.body;
-    if(!consumptionData.user || !consumptionData.food || !consumptionData.date || !consumptionData.quantity) {
+    if (!consumptionData.user || !consumptionData.food || !consumptionData.date || !consumptionData.quantity) {
         return res.status(400).json({
             success: false,
             message: "All fields are required"
         });
     }
-    if(!mongoose.Types.ObjectId.isValid(consumptionData.user) || !mongoose.Types.ObjectId.isValid(consumptionData.food)) {
+    if (!mongoose.Types.ObjectId.isValid(consumptionData.user) || !mongoose.Types.ObjectId.isValid(consumptionData.food)) {
         return res.status(400).json({
             success: false,
             message: "Invalid user or food ID"
@@ -128,19 +128,19 @@ export const addConsumption = async (req, res) => {
 export const updateConsumption = async (req, res) => {
     const id = req.params.id;
     const consumptionData = req.body;
-    if(!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
             success: false,
             message: "Invalid consumption ID"
         });
     }
-    if(!consumptionData.user || !consumptionData.food || !consumptionData.date || !consumptionData.quantity) {
+    if (!consumptionData.user || !consumptionData.food || !consumptionData.date || !consumptionData.quantity) {
         return res.status(400).json({
             success: false,
             message: "All fields are required"
         });
     }
-    if(!mongoose.Types.ObjectId.isValid(consumptionData.user) || !mongoose.Types.ObjectId.isValid(consumptionData.food)) {
+    if (!mongoose.Types.ObjectId.isValid(consumptionData.user) || !mongoose.Types.ObjectId.isValid(consumptionData.food)) {
         return res.status(400).json({
             success: false,
             message: "Invalid user or food ID"
@@ -148,7 +148,7 @@ export const updateConsumption = async (req, res) => {
     }
     try {
         const updatedConsumption = await Consumption.findByIdAndUpdate(id, consumptionData, { new: true });
-        if(!updatedConsumption) {
+        if (!updatedConsumption) {
             return res.status(404).json({
                 success: false,
                 message: "Consumption not found"
@@ -169,7 +169,7 @@ export const updateConsumption = async (req, res) => {
 
 export const deleteConsumption = async (req, res) => {
     const id = req.params.id;
-    if(!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
             success: false,
             message: "Invalid consumption ID"
@@ -177,7 +177,7 @@ export const deleteConsumption = async (req, res) => {
     }
     try {
         const deletedConsumption = await Consumption.findByIdAndDelete(id);
-        if(!deletedConsumption) {
+        if (!deletedConsumption) {
             return res.status(404).json({
                 success: false,
                 message: "Consumption not found"

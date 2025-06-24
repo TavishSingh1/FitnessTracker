@@ -11,9 +11,9 @@ function parseDateTimeFromISO(isoString) {
 }
 
 function EditMealPage({ initialData, onSaveEdit, onCancelEdit }) {
-    // Support both 'name' and 'item' for meal name
+
     const mealName = initialData?.name || initialData?.item || '';
-    // If only ISO date is present, parse date and time
+
     let dateVal = initialData?.date || '';
     let timeVal = initialData?.time || '';
     if (dateVal && !timeVal && typeof dateVal === 'string' && dateVal.includes('T')) {

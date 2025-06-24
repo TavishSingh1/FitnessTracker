@@ -31,7 +31,7 @@ export const registerUser = async (req, res) => {
         });
     }
 
-    // Hash the password before saving
+
     const salt = await bcrypt.genSalt(10);
     userData.password = await bcrypt.hash(userData.password, salt);
 
@@ -63,7 +63,7 @@ export const deleteUser = async (req, res) => {
     }
 
     try {
-        // Delete all activities, consumptions, and foods for this user
+
         await Activity.deleteMany({ user: userId });
         await Consumption.deleteMany({ user: userId });
         await Food.deleteMany({ user: userId });
@@ -113,11 +113,11 @@ export const updateUser = async (req, res) => {
                 message: "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
             });
         }
-        // Hash the new password before saving
+
         const salt = await bcrypt.genSalt(10);
         updateData.password = await bcrypt.hash(updateData.password, salt);
     } else {
-        // If password is not provided, do not update it
+
         delete updateData.password;
     }
 
@@ -191,7 +191,7 @@ export const loginUser = async (req, res) => {
             });
         }
 
-        // Check if the password matches
+
         const isMatch = await bcrypt.compare(password, user[0].password);
         if (!isMatch) {
             return res.status(401).json({

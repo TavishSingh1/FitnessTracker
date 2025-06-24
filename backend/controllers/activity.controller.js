@@ -5,7 +5,7 @@ import Exercise from "../models/exercise.model.js";
 
 export const getAllActivities = async (req, res) => {
     try {
-        // Populate the exercise field to get full exercise details
+
         const activities = await Activity.find({}).populate('exercise');
 
         if (!activities || activities.length === 0) {
@@ -65,7 +65,7 @@ export const addActivity = async (req, res) => {
     }
 
     try {
-        const allActivities = await Activity.find({user: activityData.user});
+        const allActivities = await Activity.find({ user: activityData.user });
         for (const activity of allActivities) {
             if (activity.date.getDate() === activityData.date.getDate() && activity.date.getMonth() === activityData.date.getMonth() && activity.date.getFullYear() === activityData.date.getFullYear()) {
                 const newStart = activityData.date.getTime();
@@ -144,7 +144,7 @@ export const getUserActivityOnDate = async (req, res) => {
 
     try {
         const parsedDate = new Date(date);
-        
+
         const activities = await Activity.find({
             user: user,
             date: {
@@ -206,7 +206,7 @@ export const editActivity = async (req, res) => {
         if (isNaN(activityData.date.getTime())) {
             throw new Error();
         }
-        const allActivities = await Activity.find({user: activityData.user});
+        const allActivities = await Activity.find({ user: activityData.user });
         for (const activity of allActivities) {
             if (activity.date.getDate() === activityData.date.getDate() && activity.date.getMonth() === activityData.date.getMonth() && activity.date.getFullYear() === activityData.date.getFullYear() && activity._id.toString() !== activityId) {
                 const newStart = activityData.date.getTime();

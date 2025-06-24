@@ -6,12 +6,12 @@ function HistoryCard({ data, type, onEdit, onDelete }) {
     const formatDate = (dateStr, timeStr) => {
         let date;
         if (dateStr && !timeStr && !isNaN(Date.parse(dateStr))) {
-            // dateStr is a full ISO string
+
             date = new Date(dateStr);
         } else if (dateStr && timeStr) {
             date = new Date(`${dateStr}T${timeStr}`);
         } else {
-            date = new Date(dateStr); // fallback
+            date = new Date(dateStr);
         }
         if (isNaN(date.getTime())) return "Invalid date";
         const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -38,9 +38,7 @@ function HistoryCard({ data, type, onEdit, onDelete }) {
 
     const getTitle = () => {
         if (isWorkout) {
-            // Prefer data.type, then data.exercise.name, fallback to 'Workout'
             const typeVal = data.type && data.type.trim() ? data.type : (data.exercise && data.exercise.name && data.exercise.name.trim() ? data.exercise.name : "Workout");
-            // Prefer data.intensity, then data.exercise.intensity, fallback to 'Medium'
             const intensityVal = data.intensity && data.intensity.trim() ? data.intensity : (data.exercise && data.exercise.intensity && data.exercise.intensity.trim() ? data.exercise.intensity : "Medium");
             return `${typeVal} - ${intensityVal} Intensity`;
         } else {
@@ -49,7 +47,7 @@ function HistoryCard({ data, type, onEdit, onDelete }) {
     };
 
     const getCaloriesValue = () => {
-        // Prefer data.calories, then data.caloriesBurned, then data.exercise.caloriesBurned, fallback to 0
+
         if (typeof data.calories === "number" && !isNaN(data.calories)) return data.calories;
         if (typeof data.caloriesBurned === "number" && !isNaN(data.caloriesBurned)) return data.caloriesBurned;
         if (data.exercise && typeof data.exercise.caloriesBurned === "number" && !isNaN(data.exercise.caloriesBurned)) return data.exercise.caloriesBurned;
