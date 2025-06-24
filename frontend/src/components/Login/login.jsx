@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./login.css";
 
 const LoginPage = ({ onLoginSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true); // toggle between login/signup
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,9 +27,8 @@ const LoginPage = ({ onLoginSuccess }) => {
       return;
     }
 
-    // Simulate successful login/signup
     alert(`${isLogin ? "Login" : "Signup"} successful!`);
-    onLoginSuccess(); // Go to home page
+    onLoginSuccess(email);
   };
 
   return (
