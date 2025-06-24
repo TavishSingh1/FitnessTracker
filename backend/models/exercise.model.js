@@ -3,8 +3,7 @@ import mongoose from "mongoose";
 const exerciseSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     intensity: {
         type: String,

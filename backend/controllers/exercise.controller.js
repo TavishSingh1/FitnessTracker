@@ -41,7 +41,8 @@ export const addExercise = async (req, res) => {
         await newExercise.save();
         res.status(201).json({
             success: true,
-            message: "Exercise added successfully!"
+            message: "Exercise added successfully!",
+            data: newExercise
         });
     } catch (error) {
         res.status(500).json({

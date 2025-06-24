@@ -13,6 +13,18 @@ export const activityService = {
     }
   },
 
+  getActivityById: async (id) => {
+    try {
+      const response = await api.get(`/activity/${id}`)
+      return { success: true, data: response.data.data }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to fetch activity",
+      }
+    }
+  },
+
   getActivitiesByUser: async (userId) => {
     try {
       const response = await api.get(`/activity/user/${userId}`)

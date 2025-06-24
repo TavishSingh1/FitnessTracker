@@ -2,17 +2,27 @@
 
 import { useState, useEffect } from "react"
 import { FaFire } from "react-icons/fa"
+import AutocompleteInput from "./AutocompleteInput"
+import { exerciseService } from "../services/exerciseService"
+import { activityService } from "../services/activityService"
+import WorkoutForm from "./WorkoutForm"
 
 function AddActivityPage({ exercises, onSaveWorkout, onSaveMeal, onCancel, defaultTab }) {
   const [activeForm, setActiveForm] = useState("workout")
 
+  // --- Workout fields ---
   const [workoutType, setWorkoutType] = useState("")
   const [duration, setDuration] = useState("")
   const [intensity, setIntensity] = useState("medium")
   const [workoutDate, setWorkoutDate] = useState("")
   const [workoutTime, setWorkoutTime] = useState("")
   const [calculatedBurnedCalories, setCalculatedBurnedCalories] = useState(0)
+  const [description, setDescription] = useState("")
+  const [caloriesBurned, setCaloriesBurned] = useState("")
+  const [isNewExercise, setIsNewExercise] = useState(false)
+  const [baseExercise, setBaseExercise] = useState(null)
 
+  // --- Meal fields ---
   const [foodItem, setFoodItem] = useState("")
   const [calorieContent, setCalorieContent] = useState("")
   const [mealDate, setMealDate] = useState("")
@@ -40,40 +50,33 @@ function AddActivityPage({ exercises, onSaveWorkout, onSaveMeal, onCancel, defau
   }, [defaultTab, exercises])
 
   useEffect(() => {
+    // Detect if workoutType is new or existing
+    const found = exercises.find((ex) => ex.name.toLowerCase() === workoutType.toLowerCase())
+    setIsNewExercise(!found)
+    setBaseExercise(found || null)
+    if (found) {
+      setIntensity(found.intensity)
+      setDescription(found.description || "")
+      setDuration(found.duration)
+      setCaloriesBurned(found.caloriesBurned)
+    } else {
+      setIntensity("medium")
+      setDescription("")
+      setDuration("")
+      setCaloriesBurned("")
+    }
+  }, [workoutType, exercises])
+
+  useEffect(() => {
+    // Calculate calories if possible
     const durMinutes = Number.parseFloat(duration)
-    if (isNaN(durMinutes) || durMinutes <= 0) {
+    const cals = Number.parseFloat(caloriesBurned)
+    if (isNaN(durMinutes) || durMinutes <= 0 || isNaN(cals) || cals <= 0) {
       setCalculatedBurnedCalories(0)
       return
     }
-
-    const selectedExercise = exercises.find((ex) => ex.name === workoutType)
-    if (!selectedExercise) {
-      setCalculatedBurnedCalories(0)
-      return
-    }
-
-    let intensityFactor = 1
-    switch (intensity) {
-      case "slow":
-        intensityFactor = 0.8
-        break
-      case "medium":
-        intensityFactor = 1
-        break
-      case "intense":
-        intensityFactor = 1.2
-        break
-      default:
-        intensityFactor = 1
-    }
-
-    const baseCalories = selectedExercise.caloriesBurned
-    const baseDuration = selectedExercise.duration
-    const caloriesPerMinute = baseCalories / baseDuration
-
-    const totalCalculatedCals = durMinutes * caloriesPerMinute * intensityFactor
-    setCalculatedBurnedCalories(Math.round(totalCalculatedCals))
-  }, [workoutType, duration, intensity, exercises])
+    setCalculatedBurnedCalories(Math.round(cals))
+  }, [duration, caloriesBurned])
 
   useEffect(() => {
     const totalCals = Number.parseFloat(calorieContent)
@@ -84,26 +87,50 @@ function AddActivityPage({ exercises, onSaveWorkout, onSaveMeal, onCancel, defau
     }
   }, [calorieContent])
 
-  const handleWorkoutSave = () => {
-    if (!workoutType || !duration || !workoutDate || !workoutTime) {
+  const handleWorkoutSave = async () => {
+    if (!workoutType || !duration || !workoutDate || !workoutTime || !intensity || !caloriesBurned) {
       alert("Please fill in all workout fields.")
       return
     }
-    onSaveWorkout({
+    let exerciseId = baseExercise?._id
+    // If new, create exercise first
+    if (isNewExercise) {
+      const newExercise = {
+        name: workoutType,
+        intensity,
+        description,
+        duration: Number.parseFloat(duration),
+        caloriesBurned: Number.parseFloat(caloriesBurned),
+      }
+      const result = await exerciseService.addExercise(newExercise)
+      // Fix: expect new exercise in result.data.data or result.data (handle both)
+      const newEx = result?.data?.data || result?.data;
+      if (result.success && newEx && newEx._id) {
+        exerciseId = newEx._id
+      } else {
+        alert(result.error || "Failed to add new exercise")
+        return
+      }
+    }
+    // Now save the activity
+    const activityData = {
       type: workoutType,
       duration: Number.parseFloat(duration),
-      intensity: intensity,
-      calories: calculatedBurnedCalories,
+      intensity,
+      calories: Number.parseFloat(caloriesBurned),
       date: workoutDate,
       time: workoutTime,
-    })
-
+      exercise: exerciseId,
+    }
+    onSaveWorkout(activityData)
     // Reset form
-    setWorkoutType(exercises.length > 0 ? exercises[0].name : "")
+    setWorkoutType("")
     setDuration("")
     setIntensity("medium")
     setWorkoutDate(getTodayDate())
     setWorkoutTime(getCurrentTime())
+    setDescription("")
+    setCaloriesBurned("")
   }
 
   const handleMealSave = () => {
@@ -141,74 +168,12 @@ function AddActivityPage({ exercises, onSaveWorkout, onSaveMeal, onCancel, defau
           New Meal
         </button>
       </div>
-
       {activeForm === "workout" && (
-        <div className="activity-box">
-          <div className="activity-form">
-            <div className="form-group">
-              <label htmlFor="workoutType">Workout Type</label>
-              <select id="workoutType" value={workoutType} onChange={(e) => setWorkoutType(e.target.value)}>
-                {exercises.map((exercise) => (
-                  <option key={exercise._id} value={exercise.name}>
-                    {exercise.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="duration">Duration (minutes)</label>
-              <input
-                type="number"
-                id="duration"
-                placeholder="Enter duration"
-                min="0"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="intensity">Intensity</label>
-              <select id="intensity" value={intensity} onChange={(e) => setIntensity(e.target.value)}>
-                <option value="slow">Slow</option>
-                <option value="medium">Medium</option>
-                <option value="intense">Intense</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="workoutDate">Date</label>
-              <input
-                type="date"
-                id="workoutDateElem"
-                value={workoutDate}
-                onChange={(e) => setWorkoutDate(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="workoutTime">Time</label>
-              <input
-                type="time"
-                id="workoutTimeElem"
-                value={workoutTime}
-                onChange={(e) => setWorkoutTime(e.target.value)}
-              />
-            </div>
-            <div className="form-actions">
-              <button className="form-action-button" onClick={handleWorkoutSave}>
-                Save
-              </button>
-              <button className="form-action-button cancel-button" onClick={onCancel}>
-                Cancel
-              </button>
-            </div>
-          </div>
-          <div className="activity-result">
-            <div className="activity-result-label">Calories Burnt</div>
-            <div className="calories-display-wrapper">
-              <FaFire className="fire-icon" />
-              <div className="calories-value">{calculatedBurnedCalories}</div>
-            </div>
-          </div>
-        </div>
+        <WorkoutForm
+          exercises={exercises}
+          onSave={onSaveWorkout}
+          onCancel={onCancel}
+        />
       )}
 
       {activeForm === "meal" && (

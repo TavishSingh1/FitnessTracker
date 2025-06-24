@@ -1,20 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { FaFire } from 'react-icons/fa';
 
+function parseDateTimeFromISO(isoString) {
+    if (!isoString) return { date: '', time: '' };
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return { date: '', time: '' };
+    const date = d.toISOString().slice(0, 10);
+    const time = d.toTimeString().slice(0, 5);
+    return { date, time };
+}
+
 function EditMealPage({ initialData, onSaveEdit, onCancelEdit }) {
-    const [foodItem, setFoodItem] = useState(initialData?.item || '');
+    // Support both 'name' and 'item' for meal name
+    const mealName = initialData?.name || initialData?.item || '';
+    // If only ISO date is present, parse date and time
+    let dateVal = initialData?.date || '';
+    let timeVal = initialData?.time || '';
+    if (dateVal && !timeVal && typeof dateVal === 'string' && dateVal.includes('T')) {
+        const parsed = parseDateTimeFromISO(dateVal);
+        dateVal = parsed.date;
+        timeVal = parsed.time;
+    }
+    const [foodItem, setFoodItem] = useState(mealName);
     const [calorieContent, setCalorieContent] = useState(initialData?.calories || '');
-    const [mealDate, setMealDate] = useState(initialData?.date || '');
-    const [mealTime, setMealTime] = useState(initialData?.time || '');
+    const [mealDate, setMealDate] = useState(dateVal);
+    const [mealTime, setMealTime] = useState(timeVal);
 
     const [calculatedGainedCalories, setCalculatedGainedCalories] = useState(initialData?.calories || 0);
 
     useEffect(() => {
         if (initialData) {
-            setFoodItem(initialData.item);
+            setFoodItem(initialData.name || initialData.item || '');
             setCalorieContent(initialData.calories);
-            setMealDate(initialData.date);
-            setMealTime(initialData.time);
+            let dateVal = initialData.date || '';
+            let timeVal = initialData.time || '';
+            if (dateVal && !timeVal && typeof dateVal === 'string' && dateVal.includes('T')) {
+                const parsed = parseDateTimeFromISO(dateVal);
+                dateVal = parsed.date;
+                timeVal = parsed.time;
+            }
+            setMealDate(dateVal);
+            setMealTime(timeVal);
             setCalculatedGainedCalories(initialData.calories);
         }
     }, [initialData]);

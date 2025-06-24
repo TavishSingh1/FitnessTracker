@@ -5,7 +5,8 @@ import Exercise from "../models/exercise.model.js";
 
 export const getAllActivities = async (req, res) => {
     try {
-        const activities = await Activity.find({});
+        // Populate the exercise field to get full exercise details
+        const activities = await Activity.find({}).populate('exercise');
 
         if (!activities || activities.length === 0) {
             return res.status(404).json({
@@ -281,6 +282,35 @@ export const deleteActivity = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Error deleting activity",
+            error: error.message
+        });
+    }
+}
+
+export const getActivityById = async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid activity ID"
+        });
+    }
+    try {
+        const activity = await Activity.findById(id).populate('exercise');
+        if (!activity) {
+            return res.status(404).json({
+                success: false,
+                message: "Activity not found"
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: activity
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching activity",
             error: error.message
         });
     }

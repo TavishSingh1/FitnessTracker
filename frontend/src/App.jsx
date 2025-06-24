@@ -8,13 +8,14 @@ import Sidebar from "./components/Sidebar"
 import HomePage from "./components/HomePage"
 import AddActivityPage from "./components/AddActivityPage"
 import HistoryPage from "./components/HistoryPage"
-import EditWorkoutPage from "./components/EditWorkoutPage"
+import EditWorkoutRoute from "./components/EditWorkoutRoute"
 import EditMealPage from "./components/EditMealPage"
 import ConfirmationModal from "./components/ConfirmationModal"
 
 import { activityService } from "./services/activityService"
 import { foodService } from "./services/foodService"
 import { exerciseService } from "./services/exerciseService"
+import { authService } from "./services/authService"
 
 export default function App({ userName, onLogout }) {
   const navigate = useNavigate()
@@ -87,8 +88,14 @@ export default function App({ userName, onLogout }) {
         return
       }
 
+      const userId = authService.getCurrentUserId()
+      if (!userId) {
+        alert("User not authenticated. Please log in again.")
+        return
+      }
+
       const activityData = {
-        user: "current-user-id", // You'll need to get the actual user ID
+        user: userId,
         exercise: exercise._id,
         duration: newWorkout.duration,
         date: new Date(`${newWorkout.date}T${newWorkout.time}`),
@@ -108,8 +115,13 @@ export default function App({ userName, onLogout }) {
 
   const handleSaveMeal = async (newMeal) => {
     try {
+      const userId = authService.getCurrentUserId()
+      if (!userId) {
+        alert("User not authenticated. Please log in again.")
+        return
+      }
       const foodData = {
-        user: "current-user-id", // You'll need to get the actual user ID
+        user: userId,
         name: newMeal.item,
         calories: newMeal.calories,
         date: new Date(`${newMeal.date}T${newMeal.time}`),
@@ -172,7 +184,11 @@ export default function App({ userName, onLogout }) {
         }
 
         if (result.success) {
-          await loadInitialData() // Reload data
+          if (itemToDelete.type === "workout") {
+            setActivities((prev) => prev.filter((a) => a._id !== itemToDelete.id))
+          } else {
+            setFoods((prevFoods) => prevFoods.filter((meal) => meal._id !== itemToDelete.id))
+          }
           alert(`The ${itemToDelete.type} entry has been deleted.`)
         } else {
           alert(result.error)
@@ -268,7 +284,6 @@ export default function App({ userName, onLogout }) {
             path="/edit-workout/:id"
             element={
               <EditWorkoutRoute
-                workouts={activities}
                 exercises={exercises}
                 onSaveEdit={handleSaveWorkoutEdit}
                 onCancelEdit={() => navigate("/history")}
@@ -304,14 +319,6 @@ function AddActivityRoute({ exercises, onSaveWorkout, onSaveMeal, onCancel }) {
       onCancel={onCancel}
       defaultTab={tab || "workout"}
     />
-  )
-}
-
-function EditWorkoutRoute({ workouts, exercises, onSaveEdit, onCancelEdit }) {
-  const { id } = useParams()
-  const workout = workouts.find((w) => w._id === id)
-  return (
-    <EditWorkoutPage initialData={workout} exercises={exercises} onSaveEdit={onSaveEdit} onCancelEdit={onCancelEdit} />
   )
 }
 
