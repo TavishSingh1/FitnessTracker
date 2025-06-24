@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_BASE_URL = "https://vercel.com/vishwajith-ss-projects-a6bb0dea/fitness-tracker-backend/3UJ2eKmR2DZuYUFfFQgwwV8j8yvw/api"
+const API_BASE_URL = "https://fitnesstracker-2jmr.onrender.com/api"
 
 const api = axios.create({
     baseURL: API_BASE_URL,

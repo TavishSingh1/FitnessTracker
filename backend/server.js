@@ -15,18 +15,8 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
-const allowedOrigins = ["*"]
-
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin) return callback(null, true)
-
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error("Not allowed by CORS"))
-        }
-    },
+    origin: '*',
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-auth-token"],
