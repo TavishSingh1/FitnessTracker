@@ -11,7 +11,7 @@ export async function signup(req, res) {
     return res.status(400).json({ errors: errors.array() })
   }
 
-  const { email, password } = req.body
+  const { username, fullname, email, password, age, height, weight } = req.body
 
   try {
     let user = await User.findOne({ email })
@@ -23,13 +23,13 @@ export async function signup(req, res) {
     const hashedPassword = await bcrypt.hash(password, salt)
 
     user = new User({
+      username,
+      fullName: fullname,
       email,
       password: hashedPassword,
-      username: email.split("@")[0],
-      fullName: email.split("@")[0],
-      age: 25,
-      height: 170,
-      weight: 70,
+      age,
+      height,
+      weight,
     })
 
     await user.save()

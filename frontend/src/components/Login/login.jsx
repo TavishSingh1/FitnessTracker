@@ -10,19 +10,29 @@ const LoginPage = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState("")
+  const [fullname, setFullname] = useState("")
+  const [age, setAge] = useState("")
+  const [height, setHeight] = useState("")
+  const [weight, setWeight] = useState("")
 
   const toggleMode = () => {
     setIsLogin(!isLogin)
     setEmail("")
     setPassword("")
     setConfirmPassword("")
+    setUsername("")
+    setFullname("")
+    setAge("")
+    setHeight("")
+    setWeight("")
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
-    if (!email || !password) {
+    if (!email || !password || (!isLogin && (!username || !fullname || !age || !height || !weight))) {
       alert("Please fill in all required fields.")
       setLoading(false)
       return
@@ -39,7 +49,15 @@ const LoginPage = ({ onLoginSuccess }) => {
       if (isLogin) {
         result = await authService.login(email, password)
       } else {
-        result = await authService.signup(email, password)
+        result = await authService.signup({
+          username,
+          fullname,
+          email,
+          password,
+          age,
+          height,
+          weight,
+        })
       }
 
       if (result.success) {
@@ -59,7 +77,29 @@ const LoginPage = ({ onLoginSuccess }) => {
       <div className="login-card">
         <h2>{isLogin ? "Login" : "Sign Up"}</h2>
         <form onSubmit={handleSubmit}>
-          <label>Email</label>
+          {!isLogin && (
+            <>
+              <label>Username</label>
+              <input
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={loading}
+              />
+              <label>Full Name</label>
+              <input
+                type="text"
+                placeholder="Enter full name"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </>
+          )}
+          <label>Email ID</label>
           <input
             type="email"
             placeholder="Enter email"
@@ -68,7 +108,6 @@ const LoginPage = ({ onLoginSuccess }) => {
             required
             disabled={loading}
           />
-
           <label>Password</label>
           <input
             type="password"
@@ -87,6 +126,33 @@ const LoginPage = ({ onLoginSuccess }) => {
                 placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
+              <label>Age</label>
+              <input
+                type="number"
+                placeholder="Enter age"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                required
+                disabled={loading}
+              />
+              <label>Height (cm)</label>
+              <input
+                type="number"
+                placeholder="Enter height in cm"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                required
+                disabled={loading}
+              />
+              <label>Weight (kg)</label>
+              <input
+                type="number"
+                placeholder="Enter weight in kg"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
                 required
                 disabled={loading}
               />

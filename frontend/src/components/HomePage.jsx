@@ -4,8 +4,10 @@ import { useEffect, useRef } from "react"
 import Chart from "chart.js/auto"
 import { FaPersonRunning } from "react-icons/fa6"
 import { FaChartBar, FaFire } from "react-icons/fa"
+import { useNavigate } from "react-router-dom"
 
 function HomePage({ totalWorkouts, totalMeals, onAddActivity, userName, activities, foods }) {
+  const navigate = useNavigate()
   const dailyCaloriesChartRef = useRef(null)
   const monthlyWorkoutsChartRef = useRef(null)
   const dailyCaloriesChartInstance = useRef(null)
@@ -246,7 +248,16 @@ function HomePage({ totalWorkouts, totalMeals, onAddActivity, userName, activiti
           <span className="app-name-text">Pulse</span>
         </div>
         <div className="user-profile">
-          <span className="user-greeting">Hello, {userName}</span>
+          <span
+            className="user-greeting"
+            style={{ cursor: "pointer", textDecoration: "underline" }}
+            onClick={() => {
+              const userId = localStorage.getItem("userId")
+              if (userId) navigate(`/edit-user-details/${userId}`)
+            }}
+          >
+            Hello, {userName}
+          </span>
         </div>
       </div>
 

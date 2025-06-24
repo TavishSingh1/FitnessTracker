@@ -11,6 +11,7 @@ import HistoryPage from "./components/HistoryPage"
 import EditWorkoutRoute from "./components/EditWorkoutRoute"
 import EditMealPage from "./components/EditMealPage"
 import ConfirmationModal from "./components/ConfirmationModal"
+import EditUserDetailsPage from "./components/EditUserDetailsPage"
 
 import { activityService } from "./services/activityService"
 import { foodService } from "./services/foodService"
@@ -296,6 +297,7 @@ export default function App({ userName, onLogout }) {
               <EditMealRoute meals={foods} onSaveEdit={handleSaveMealEdit} onCancelEdit={() => navigate("/history")} />
             }
           />
+          <Route path="/edit-user-details/:id" element={<EditUserDetailsPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

@@ -31,22 +31,21 @@ export const authService = {
     }
   },
 
-  signup: async (email, password) => {
+  signup: async (userData) => {
     try {
-      console.log("Attempting signup for:", email)
-      const response = await api.post("/auth/signup", { email, password })
+      console.log("Attempting signup for:", userData.email)
+      const response = await api.post("/auth/signup", userData)
 
       const { token, user } = response.data
-
       if (!token || !user || !user.id) {
         return { success: false, error: "No token or user ID received" }
       }
 
       localStorage.setItem("authToken", token)
-      localStorage.setItem("userEmail", email)
+      localStorage.setItem("userEmail", userData.email)
       localStorage.setItem("userId", user.id)
 
-      return { success: true, token, email, userId: user.id }
+      return { success: true, token, email: userData.email, userId: user.id }
     } catch (error) {
       console.error("Signup error:", error.response?.data || error.message)
       return {
